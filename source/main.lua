@@ -1,7 +1,7 @@
-import "dvd" -- DEMO
-import "game_test_1"
-local dvd = dvd(1, -1) -- DEMO
-local gt1_inst = gt1()
+
+import "game"
+
+local game = Game()
 local gfx <const> = playdate.graphics
 local font = gfx.font.new('font/Mini Sans 2X') -- DEMO
 
@@ -11,30 +11,17 @@ local function loadGame()
 	gfx.setFont(font) -- DEMO
 end
 
-local function updateGame()
-	--dvd:update() -- DEMO
-	gt1_inst:update()
-end
 
-local function drawGame()
-	gfx.clear() -- Clears the screen
-	gt1_inst:draw() -- DEMO
-end
-
-loadGame()
+--loadGame()
 
 function playdate.update()
-	updateGame()
-	drawGame()
-
-	playdate.drawFPS(0,0) -- FPS widget
-	if(gt1_inst.gameOver) then
-		gt1_inst =  gt1()
-	end
+	game:update()
+	game:draw()
 end
 
+-- functions below control input for the machine
 function playdate.cranked(change, acceleratedChange)
-	gt1_inst:cranked(change)
+	--gt1_inst:cranked(change)
 
 end
 
