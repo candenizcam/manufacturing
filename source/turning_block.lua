@@ -18,10 +18,14 @@ class("TurningBlock").extends()
 
 function TurningBlock:init()
     self.block_distance = {}
+    self.random_thing = {}
     self.tool_offset = Point(tool_offset_x, tool_offset_y)
-    self.default_radius = 110
+    self.default_radius = 100
+    self.counter = 0
+    self.grid_visible = false
     for i = 0,321 do
         self.block_distance[i] =self.default_radius
+        self.random_thing[i] = math.random(1,32)
        -- if i<100 then
         --    self.block_distance[i] =  100 --100
        -- else
@@ -31,22 +35,54 @@ function TurningBlock:init()
 
     end
 
+    self.visuals = {}
+    for x,i in ipairs( {"040-","080-","120-","160-","200-"}) do
+        self.visuals[x] = {}
+        for y = 1,32 do
+            local sy = ""
+            if y<10 then
+                sy = "0"
+            end
+            s = "image/log/"..i..sy..tostring(y)..".png"
+            self.visuals[x][y] =  playdate.graphics.image.new(s)
+            --print(self.visuals[x][y])
+        end
+
+    end
+
 end
 
 
 function TurningBlock:draw()
-    playdate.graphics.setColor(playdate.graphics.kColorBlack)
+    playdate.graphics.setColor(playdate.graphics.kColorWhite)
+    local rel_size = 5
+    local rel_index = 1
+    self.counter = self.counter + 1
+    --math.randomseed(255)
     for i = 1,320 do
         --playdate.graphics.drawPixel(i,self.block_distance[i])
-
-        local smallEnd = math.min(self.block_distance[i-1],self.block_distance[i],self.block_distance[i+1] )
-
+        --local smallEnd = math.min(self.block_distance[i-1],self.block_distance[i],self.block_distance[i+1] )
+        --rel_index = (math.random(1,32) + math.floor(self.counter/2))%32+1
+        rel_index = (self.random_thing[i] + math.floor(self.counter/2))%32+1
+        --rel_index = (i + math.floor(self.counter/0.5  ))%8+1
+        rel_size  =math.ceil(self.block_distance[i]/20)
+        if self.counter==80 then
+            self.counter = 0
+        end
         if self.block_distance[i] ~= 0 then
-            for j  = smallEnd, self.block_distance[i] do
+            self.visuals[rel_size][rel_index]:draw(self.tool_offset.x+i, log_centre - rel_size*20)
 
-                playdate.graphics.drawPixel(self.tool_offset.x + i,self.tool_offset.y + 120 + j)
-                playdate.graphics.drawPixel(self.tool_offset.x + i,self.tool_offset.y + 120 - j)
-            end
+            playdate.graphics.setColor(playdate.graphics.kColorWhite)
+            playdate.graphics.drawLine(self.tool_offset.x+i, log_centre*2,
+                    self.tool_offset.x+i, self.tool_offset.y + log_centre+ self.block_distance[i])
+            playdate.graphics.drawLine(self.tool_offset.x+i, 0,
+                    self.tool_offset.x+i, self.tool_offset.y + log_centre- self.block_distance[i])
+
+            --playdate.graphics.drawLine(self.tool_offset.x+i, self.tool_offset.y + log_centre+ self.block_distance[i]-5,
+            --        self.tool_offset.x+i, self.tool_offset.y + log_centre+ self.block_distance[i])
+            --playdate.graphics.drawLine(self.tool_offset.x+i, self.tool_offset.y + log_centre- self.block_distance[i]+5,
+            --        self.tool_offset.x+i, self.tool_offset.y + log_centre- self.block_distance[i])
+
         else
             for j = i,320 do
                 self.block_distance[j] = 0
@@ -54,14 +90,41 @@ function TurningBlock:draw()
             end
             break
         end
+    end
 
+    if self.grid_visible then
+        playdate.graphics.setColor(playdate.graphics.kColorBlack)
+        for i = 0,10 do
+            local y = log_centre + i*10
+            playdate.graphics.drawLine(self.tool_offset.x-10 ,y,
+                    self.tool_offset.x+330 ,y)
+            y = log_centre - i*10
+            playdate.graphics.drawLine(self.tool_offset.x-10 ,y,
+                    self.tool_offset.x+330 ,y)
 
+        end
 
-
+        for i = -1,33 do
+            playdate.graphics.drawLine(i*10+self.tool_offset.x ,log_centre +100,
+                    i*10+self.tool_offset.x ,log_centre-100 )
+        end
 
     end
-    playdate.graphics.drawLine(self.tool_offset.x+1, self.tool_offset.y + 120 + self.block_distance[1], self.tool_offset.x+1, self.tool_offset.y + 120 - self.block_distance[1])
-    playdate.graphics.drawLine(self.tool_offset.x+320, self.tool_offset.y + 120 + self.block_distance[320], self.tool_offset.x+320, self.tool_offset.y + 120 - self.block_distance[320])
+end
 
 
+function TurningBlock:drawOutline(outline_color)
+    for i = 1,320 do
+        if self.block_distance[i] ~= 0 then
+            playdate.graphics.setColor(outline_color)
+            local delta = math.max(self.block_distance[i]-5,0)
+
+
+            playdate.graphics.drawLine(self.tool_offset.x+i, self.tool_offset.y + log_centre+ delta ,
+                    self.tool_offset.x+i, self.tool_offset.y + log_centre+ self.block_distance[i])
+            playdate.graphics.drawLine(self.tool_offset.x+i, self.tool_offset.y + log_centre- delta,
+                    self.tool_offset.x+i, self.tool_offset.y + log_centre- self.block_distance[i])
+        end
+
+    end
 end

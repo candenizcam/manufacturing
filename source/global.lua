@@ -8,4 +8,6 @@ tool_offset_x = 30
 tool_offset_y = 0
 game_area_width  = 320
 horizontal_button_sensitivity = 1
+vertical_button_sensitivity = 4
 crank_vertical_sensitivity = 0.2
+log_centre = 108

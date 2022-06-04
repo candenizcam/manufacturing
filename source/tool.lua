@@ -14,7 +14,7 @@ import "global"
 class("Tool").extends()
 
 function Tool:init()
-    self.min_x = -1
+    self.min_x = 0
     self.max_x = game_area_width
     self.x = 1
     self.y = 0
@@ -29,8 +29,8 @@ function Tool:init()
         self.profiles.rect[i] = self.height
         self.profiles.left_45[i] = self.height - i
         self.profiles.right_45[i] = self.height + i -self.width
-        self.profiles.left_30[i] = self.height - (i)/math.sqrt(3)
-        self.profiles.right_30[i] = self.height - (self.width - i)/math.sqrt(3)
+        self.profiles.left_30[i] = self.height - (i)/2
+        self.profiles.right_30[i] = self.height - (self.width - i)/2
         self.profiles.circ_full[i] = math.sqrt(self.width * i - i*i) - self.width/2 + self.height
         self.profiles.cric_full[i] =  self.height - math.sqrt(self.width * i - i*i)
 
@@ -42,7 +42,7 @@ function Tool:init()
     self.profiles.cric_full[self.width/2] = self.height
 
 
-    self.active_profile = self.profiles.circ_full
+    self.active_profile = self.profiles.rect
 end
 
 function Tool:swap_tool()
@@ -67,20 +67,27 @@ end
 
 function Tool:move_by_y(y)
     self.y = self.y + y
-    self.y = math.min(math.max(self.y,1), 120)
+    self.y = math.min(math.max(self.y,1), 240 - log_centre )
 end
 
 function Tool:move_to_y(y)
     self.y = y
 
-    self.y = math.min(math.max(self.y,1), 120)
+    self.y = math.min(math.max(self.y,1), 240 - log_centre )
 end
 
 function Tool:draw()
     playdate.graphics.setColor(playdate.graphics.kColorBlack)
 
     for i = 0,self.width do
+        playdate.graphics.setColor(playdate.graphics.kColorBlack)
         playdate.graphics.drawLine(self.x + tool_offset_x + i, 240 - self.active_profile[i]-self.y, self.x + tool_offset_x + i,240)
+        if i~= 0 and i~= self.width then
+            playdate.graphics.setColor(playdate.graphics.kColorWhite)
+            playdate.graphics.drawLine(self.x + tool_offset_x + i, 240 - self.active_profile[i]-self.y+1, self.x + tool_offset_x + i,240 - self.active_profile[i]-self.y+5)
+
+        end
+
     end
 
 end

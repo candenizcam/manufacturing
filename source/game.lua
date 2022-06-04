@@ -18,7 +18,7 @@ function Game:init()
     self.tool = Tool()
     self.cut_done = 0
     self.chips = List()
-    self.this_level = Blueprint(levels.l4)
+    self.this_level = Blueprint(levels.l1)
     self.blueprint_visible = false
 end
 
@@ -33,17 +33,29 @@ function Game:horizontal_button()
     return buttonX
 end
 
+function Game:vertical_button()
+    local buttonY = 0
+    if playdate.buttonIsPressed(playdate.kButtonUp)  then
+        buttonY = buttonY + 1
+    end
+    if playdate.buttonIsPressed(playdate.kButtonDown) then
+        buttonY = buttonY - 1
+    end
+    return buttonY
+end
+
 
 function Game:update()
-
-    self:move_tool_x(Game:horizontal_button()*horizontal_button_sensitivity)
-
+    if not self.blueprint_visible then
+        self:move_tool_x(Game:horizontal_button()*horizontal_button_sensitivity)
+        self:move_tool_y(Game:vertical_button()*vertical_button_sensitivity)
+    end
 
     for i = 0,self.tool.width do
 
         if self.turning_block.block_distance[self.tool.x + i] then
             if self.turning_block.block_distance[self.tool.x + i]~=0 then
-                local this_cut = 120 - self.tool.y - self.tool.active_profile[i]
+                local this_cut = 240 - log_centre - self.tool.y - self.tool.active_profile[i]
                 if self.turning_block.block_distance[self.tool.x + i]>this_cut then
                     self.cut_done  = 0
                     self.turning_block.block_distance[self.tool.x + i] = math.max(math.min(self.turning_block.block_distance[self.tool.x + i],this_cut),0)
@@ -72,12 +84,13 @@ function Game:update()
 end
 
 function Game:move_tool_y(d)
-    if self.cut_done~=0 and math.abs(d)>0 then
-        self.cut_done = self.cut_done-1
-    else
-        self.tool:move_by_y(d*crank_vertical_sensitivity)
+    if not  self.blueprint_visible then
+        if self.cut_done~=0 and math.abs(d)>0 then
+            self.cut_done = self.cut_done-1
+        else
+            self.tool:move_by_y(d*crank_vertical_sensitivity)
+        end
     end
-
 
 end
 
@@ -87,15 +100,22 @@ end
 
 function Game:draw()
     playdate.graphics.clear()
-    self.turning_block:draw()
-    self.tool:draw()
-    playdate.graphics.setColor(playdate.graphics.kColorXOR)
-    self.chips:iterate(
-            function( p  ) playdate.graphics.drawPixel(p.x,p.y);playdate.graphics.drawPixel(p.x,p.y+1) end
-    )
-    self.chips:clear()
+
     if self.blueprint_visible then
+        --self.turning_block:draw()
         self.this_level:draw()
+        --self.turning_block:drawOutline(playdate.graphics.kColorXOR)
+
+        self.tool:draw()
+    else
+        self.turning_block:draw()
+        self.turning_block:drawOutline(playdate.graphics.kColorBlack)
+        self.tool:draw()
+        playdate.graphics.setColor(playdate.graphics.kColorXOR)
+        self.chips:iterate(
+                function( p  ) playdate.graphics.drawPixel(p.x,p.y);playdate.graphics.drawPixel(p.x,p.y+1) end
+        )
+        self.chips:clear()
     end
 
 end

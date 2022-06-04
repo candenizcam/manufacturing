@@ -7,26 +7,57 @@
 
 import "CoreLibs/graphics"
 import "CoreLibs/object"
-
+import "global"
 
 class("Blueprint").extends()
 
 function Blueprint:init(s)
     self.values  =s
     self.tool_offset = Point(tool_offset_x, tool_offset_y)
-
+    self.grid_visible = false
 end
 
 
 function Blueprint:draw()
-    playdate.graphics.setColor(playdate.graphics.kColorXOR)
+    playdate.graphics.setColor(playdate.graphics.kColorBlack)
+    local grid_height = math.ceil(log_centre/10)*10
+
     for i  = 1,320 do
         if self.values[i]~=nil then
-            playdate.graphics.drawLine(self.tool_offset.x + i,self.tool_offset.y + 120 + self.values[i],self.tool_offset.x + i,self.tool_offset.y + 120 - self.values[i])
+            playdate.graphics.drawLine(self.tool_offset.x + i,self.tool_offset.y + log_centre + self.values[i],self.tool_offset.x + i,self.tool_offset.y + log_centre - self.values[i])
         else
             break
         end
 
 
     end
+
+    if self.grid_visible then
+        for i = 0,10 do
+            local y = log_centre + i*10
+            playdate.graphics.drawLine(self.tool_offset.x-10 ,y,
+                    self.tool_offset.x+330 ,y)
+            y = log_centre - i*10
+            playdate.graphics.drawLine(self.tool_offset.x-10 ,y,
+                    self.tool_offset.x+330 ,y)
+
+        end
+
+        for i = -1,33 do
+            playdate.graphics.drawLine(i*10+self.tool_offset.x ,log_centre +100,
+                    i*10+self.tool_offset.x ,log_centre-100 )
+        end
+
+    end
+
+    --playdate.graphics.drawLine(self.tool_offset.x ,0,
+    --        self.tool_offset.x ,grid_height)
+
+    --for i = 1,grid_height do
+    --    if i%10==0 then
+    --        playdate.graphics.drawLine(self.tool_offset.x , i,
+     --               self.tool_offset.x + 320,i)
+     --   end
+    --end
+
 end
