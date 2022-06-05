@@ -48,7 +48,7 @@ function Game:lets_roll()
     self.end_level_scene = false
 end
 
-function Game:hammer_time()
+function Game:hammer_time() -- stop
     running_sample:stop()
     end_sample:play()
     self.wheels_are_turning = false
@@ -59,8 +59,70 @@ end
 function Game:restart()
     self.turning_block:restart()
     self.tool:reset_tool()
+
 end
 
+function Game:get_blueprint()
+    if properties.total_level < 5 then
+        local index = "l" .. tostring(properties.total_level)
+        return Blueprint(levels[index])
+    end
+
+    local l = List()
+
+    -- 19, 7
+    for i= 1,100 do
+        if l.size==4 then
+            break
+        end
+        local v = math.random(1,26)
+        if not l:contains(v) then
+            if v>19 then
+                l:append(v)
+                break
+            else
+                l:append(v)
+            end
+        end
+
+    end
+    l:iterate(
+            function(x) print(x)  end
+    )
+
+
+    local l2 = l:map(
+            function(x)
+                local st = ""
+                if x >19 then
+                    st = "rnd_end" .. tostring(x-19)
+                else
+                    st = "rnd" .. tostring(x)
+                end
+                return levels[st]
+            end
+    )
+
+    l2:iterate(
+            function(x) print(x)  end
+    )
+
+    local l3 = List()
+    l2:iterate(
+            function(x)
+                l3:append(x)
+            end
+    )
+    print(l3.size)
+    return l3.vals
+end
+
+function Game:next_level()
+    properties.total_level  = properties.total_level + 1
+    self.this_level = Game:get_blueprint()
+
+
+end
 
 function Game:horizontal_button()
     local buttonX = 0

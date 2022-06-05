@@ -24,11 +24,14 @@ local function loadGame()
 			properties.active_level = m.active_level
 		end
 
+
 		if m.total_level ~= nil then
 			properties.total_level = m.total_level
 		end
 	end
-	print(m.total_level)
+	properties.total_level = 7
+	game.this_level = game:get_blueprint()
+
 
 	--print(properties.active_level)
 	game:load_state()

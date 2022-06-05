@@ -39,6 +39,26 @@ function List:iterate(f)
     end
 end
 
+function List:map(f)
+    local l  =List()
+    for i = 1,self.size do
+        l:append(f(self.vals[i]))
+    end
+    return l
+end
+
 function List:get(x)
     return self.vals[x]
+end
+
+function List:contains(n)
+    local b = false
+    for i = 1,self.size do
+        if self.vals[i] == n then
+            b = true
+            break
+        end
+    end
+    return b
+
 end
