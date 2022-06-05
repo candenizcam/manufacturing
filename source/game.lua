@@ -10,7 +10,6 @@ import "tool"
 import "levels"
 import "list"
 import "blueprint"
-import "sounds"
 
 class("Game").extends()
 
@@ -25,6 +24,7 @@ function Game:init()
     self.machine_visual = playdate.graphics.image.new("image/machine.png")
     self.chip_sounds = 0
     self.end_level_scene = false
+    self.level_complete = false
     --self.drop_sound= playdate.sound.fileplayer.new(2)
     --self.drop_sound:load("sounds/drop.wav")
 
@@ -62,60 +62,7 @@ function Game:restart()
 
 end
 
-function Game:get_blueprint()
-    if properties.total_level < 5 then
-        local index = "l" .. tostring(properties.total_level)
-        return Blueprint(levels[index])
-    end
 
-    local l = List()
-
-    -- 19, 7
-    for i= 1,100 do
-        if l.size==4 then
-            break
-        end
-        local v = math.random(1,26)
-        if not l:contains(v) then
-            if v>19 then
-                l:append(v)
-                break
-            else
-                l:append(v)
-            end
-        end
-
-    end
-    l:iterate(
-            function(x) print(x)  end
-    )
-
-
-    local l2 = l:map(
-            function(x)
-                local st = ""
-                if x >19 then
-                    st = "rnd_end" .. tostring(x-19)
-                else
-                    st = "rnd" .. tostring(x)
-                end
-                return levels[st]
-            end
-    )
-
-    l2:iterate(
-            function(x) print(x)  end
-    )
-
-    local l3 = List()
-    l2:iterate(
-            function(x)
-                l3:append(x)
-            end
-    )
-    print(l3.size)
-    return l3.vals
-end
 
 function Game:next_level()
     properties.total_level  = properties.total_level + 1
@@ -242,10 +189,21 @@ function Game:draw()
         self.chips:clear()
     end
 
-
-
-
     self:draw_score()
+
+
+    if self.end_level_scene then
+        dark_bg:draw(0,0)
+        if self.level_complete then
+            complete:draw(0,0)
+        else
+            incomplete:draw(0,0)
+        end
+
+    end
+
+
+
 
 
     self.machine_visual:draw(0,0)
@@ -253,14 +211,19 @@ function Game:draw()
     --playdate.graphics.drawText(self.this_level.outer_diff, 100,220)
 end
 
+function Game:get_score_percentage()
+    local score_perc =  self:calculate_score()/self.this_level.outer_diff*103 - 3
+    local score_capped = math.max(math.min(100,score_perc),0)
+    local score_string = tostring( math.min(  math.floor(100-score_capped) ,100)) --.. "% complete"
+    self.level_complete = score_string=="100"
+    return score_string
+end
 
 function Game:draw_score()
     self.hud_visual:draw(0,0)
 
-    local score_perc =  self:calculate_score()/self.this_level.outer_diff*103 - 3
-    local score_capped = math.max(math.min(100,score_perc),0)
-    local score_string = tostring( math.min(  math.floor(100-score_capped) ,100)) --.. "% complete"
-    playdate.graphics.drawTextAligned(score_string, 367,70,kTextAlignment.center)
+
+    playdate.graphics.drawTextAligned(self:get_score_percentage(), 367,70,kTextAlignment.center)
 
     playdate.graphics.drawTextAligned(tostring(properties.active_level), 367,26,kTextAlignment.center)
 
@@ -270,12 +233,21 @@ end
 
 function Game:save_state()
     playdate.datastore.write(self.turning_block.block_distance , "active_level")
+    playdate.datastore.write(self.blueprint.values , "active_blueprint")
 end
 
 function Game:load_state()
     local m = playdate.datastore.read( "active_level")
+
     if m~=nil then
         self.turning_block.block_distance = m
+    end
+
+    local b = playdate.datastore.read( "active_blueprint")
+    if b~=nil then
+        game.this_level = b
+    else
+        game.this_level = get_blueprint()
     end
 
 end

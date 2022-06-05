@@ -23,14 +23,12 @@ local function loadGame()
 		if m.active_level ~= nil then
 			properties.active_level = m.active_level
 		end
-
-
 		if m.total_level ~= nil then
 			properties.total_level = m.total_level
 		end
 	end
-	properties.total_level = 7
-	game.this_level = game:get_blueprint()
+	properties.total_level = 1
+
 
 
 	--print(properties.active_level)
@@ -101,18 +99,41 @@ function playdate.rightButtonDown()
 end
 
 function playdate.BButtonDown()
-	paper_sample:play()
-	game.blueprint_visible = not game.blueprint_visible
+	if game.end_level_scene then -- break
+		if game.level_complete then
+
+		else
+
+		end
+	else
+		game.blueprint_visible = not game.blueprint_visible
+		if game.blueprint_visible then
+			paper_sample:play()
+		end
+	end
+
+
 end
 
 function playdate.AButtonDown()
-	game.tool:swap_tool()
+	if game.end_level_scene then -- continue
+		if game.level_complete then
+
+		else
+
+		end
+	else
+		game.tool:swap_tool()
+	end
+
+
 end
 
 
 function playdate.gameWillTerminate()
 	game:save_state()
 	playdate.datastore.write( properties, "other_data" )
+
 end
 
 function  playdate.deviceWillSleep()

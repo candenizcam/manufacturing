@@ -35,7 +35,9 @@ function Blueprint:draw_low_half()
 
     for i  = 1,320 do
         if self.values[i]~=nil then
-            playdate.graphics.drawLine(self.tool_offset.x + i,self.tool_offset.y + log_centre + self.values[i],self.tool_offset.x + i,self.tool_offset.y + log_centre)
+            if self.values[i]~= 0 then
+                playdate.graphics.drawLine(self.tool_offset.x + i,self.tool_offset.y + log_centre + self.values[i],self.tool_offset.x + i,self.tool_offset.y + log_centre)
+            end
         else
             break
         end
@@ -50,7 +52,10 @@ function Blueprint:draw()
 
     for i  = 1,320 do
         if self.values[i]~=nil then
-            playdate.graphics.drawLine(self.tool_offset.x + i,self.tool_offset.y + log_centre + self.values[i],self.tool_offset.x + i,self.tool_offset.y + log_centre - self.values[i])
+            if self.values[i]~= 0 then
+                playdate.graphics.drawLine(self.tool_offset.x + i,self.tool_offset.y + log_centre + self.values[i],self.tool_offset.x + i,self.tool_offset.y + log_centre - self.values[i])
+            end
+
         else
             break
         end
@@ -77,14 +82,67 @@ function Blueprint:draw()
 
     end
 
-    --playdate.graphics.drawLine(self.tool_offset.x ,0,
-    --        self.tool_offset.x ,grid_height)
+end
 
-    --for i = 1,grid_height do
-    --    if i%10==0 then
-    --        playdate.graphics.drawLine(self.tool_offset.x , i,
-     --               self.tool_offset.x + 320,i)
-     --   end
-    --end
+function get_blueprint()
+    if properties.total_level < 5 then
+        local index = "l" .. tostring(properties.total_level)
+        return Blueprint(levels[index])
+    end
 
+    local l = List()
+
+    -- 19, 7
+    for i= 1,100 do
+        if l.size==4 then
+            break
+        end
+        local v = math.random(1,26)
+        if not l:contains(v) then
+            if v>19 then
+                l:append(v)
+                break
+            else
+                l:append(v)
+            end
+        end
+
+    end
+
+    local l2 = l:map(
+            function(x)
+                local st = ""
+                if x >19 then
+                    st = "rnd_end" .. tostring(x-19)
+                else
+                    st = "rnd" .. tostring(x)
+                end
+                return levels[st]
+            end
+    )
+
+    local l3 = List()
+    l2:iterate(
+            function(x)
+                for i = 1,10000 do
+                    local a = x[i]
+                    if a==nil then
+                        break
+                    end
+                    l3:append(a)
+                end
+
+            end
+    )
+
+
+    for i = l3.size,320 do
+        l3:append(0)
+    end
+
+    l3:iterate(
+            function(x) print(x)  end
+    )
+
+    return Blueprint(l3.vals)
 end

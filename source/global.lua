@@ -26,5 +26,7 @@ paper_sample = playdate.sound.sampleplayer.new("sounds/Paper.wav")
 
 --- visuals
 chisels = playdate.graphics.image.new("image/knifes/chisels.png")
-dark_bg = playdate.graphics.image.new("image/dark_bg.png")
-test_pause = playdate.graphics.image.new("image/testpause.png")
+dark_bg = playdate.graphics.image.new("image/dark_bg2.png")
+
+complete = playdate.graphics.image.new("image/complete.png")
+incomplete = playdate.graphics.image.new("image/incomplete.png")
