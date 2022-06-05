@@ -5,3 +5,5 @@ bundleID=com.organization.package
 version=0.0.1
 buildNumber=1
 imagePath=source/launch/
+pdxversion=11000
+buildtime=707778313
