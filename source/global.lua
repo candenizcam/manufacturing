@@ -4,7 +4,7 @@
 --- DateTime: 04/06/2022 13:19
 ---
 
-tool_offset_x = 30
+tool_offset_x = 16
 tool_offset_y = 0
 game_area_width  = 320
 horizontal_button_sensitivity = 1

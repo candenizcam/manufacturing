@@ -45,7 +45,17 @@ function Tool:init()
     self.active_profile = self.profiles.rect
 end
 
+
+
+
+function Tool:reset_tool()
+    self.x = 1
+    self.y = 0
+    self.active_profile = self.profiles.rect
+end
+
 function Tool:swap_tool()
+    self.y = 0
     self.knife_index = self.knife_index+1
     if self.knife_index>self.knife_name_no then
         self.knife_index = 1

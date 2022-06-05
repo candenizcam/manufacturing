@@ -26,7 +26,8 @@ function TurningBlock:init()
     for i = 0,321 do
         self.block_distance[i] =self.default_radius
         self.random_thing[i] = math.random(1,32)
-       -- if i<100 then
+
+        -- if i<100 then
         --    self.block_distance[i] =  100 --100
        -- else
       --      self.block_distance[i] = 20*math.sin(i/36*math.pi  ) + 80 --100
@@ -52,8 +53,14 @@ function TurningBlock:init()
 
 end
 
+function TurningBlock:restart()
+    for i = 0,321 do
+        self.block_distance[i] =self.default_radius
+        self.random_thing[i] = math.random(1,32)
+    end
+end
 
-function TurningBlock:draw()
+function TurningBlock:draw(andTurn)
     playdate.graphics.setColor(playdate.graphics.kColorWhite)
     local rel_size = 5
     local rel_index = 1
@@ -63,7 +70,12 @@ function TurningBlock:draw()
         --playdate.graphics.drawPixel(i,self.block_distance[i])
         --local smallEnd = math.min(self.block_distance[i-1],self.block_distance[i],self.block_distance[i+1] )
         --rel_index = (math.random(1,32) + math.floor(self.counter/2))%32+1
-        rel_index = (self.random_thing[i] + math.floor(self.counter/2))%32+1
+        if andTurn then
+            rel_index = (self.random_thing[i] + math.floor(self.counter/2))%32+1
+        else
+            rel_index = (self.random_thing[i])
+        end
+
         --rel_index = (i + math.floor(self.counter/0.5  ))%8+1
         rel_size  =math.ceil(self.block_distance[i]/20)
         if self.counter==80 then

@@ -15,12 +15,38 @@ function Blueprint:init(s)
     self.values  =s
     self.tool_offset = Point(tool_offset_x, tool_offset_y)
     self.grid_visible = false
+
+    self.outer_diff = 0
+    self.inner_diff = 0
+    for i = 1,320 do
+        self.outer_diff = self.outer_diff + 100 - self.values[i]
+        self.inner_diff = self.inner_diff + self.values[i]
+    end
+
 end
 
 
+function Blueprint:draw_low_half()
+    playdate.graphics.setColor(playdate.graphics.kColorWhite)
+    playdate.graphics.fillRect(self.tool_offset.x, self.tool_offset.y + log_centre, 350, 240)
+
+    playdate.graphics.setColor(playdate.graphics.kColorBlack)
+
+
+    for i  = 1,320 do
+        if self.values[i]~=nil then
+            playdate.graphics.drawLine(self.tool_offset.x + i,self.tool_offset.y + log_centre + self.values[i],self.tool_offset.x + i,self.tool_offset.y + log_centre)
+        else
+            break
+        end
+
+
+    end
+end
+
 function Blueprint:draw()
     playdate.graphics.setColor(playdate.graphics.kColorBlack)
-    local grid_height = math.ceil(log_centre/10)*10
+
 
     for i  = 1,320 do
         if self.values[i]~=nil then
@@ -33,6 +59,7 @@ function Blueprint:draw()
     end
 
     if self.grid_visible then
+        local grid_height = math.ceil(log_centre/10)*10
         for i = 0,10 do
             local y = log_centre + i*10
             playdate.graphics.drawLine(self.tool_offset.x-10 ,y,

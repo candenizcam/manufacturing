@@ -20,7 +20,16 @@ function Game:init()
     self.chips = List()
     self.this_level = Blueprint(levels.l1)
     self.blueprint_visible = false
+
+
+    self.howto_visual  = playdate.graphics.image.new("image/howto.png")
 end
+
+function Game:restart()
+    self.turning_block:restart()
+    self.tool:reset_tool()
+end
+
 
 function Game:horizontal_button()
     local buttonX = 0
@@ -52,7 +61,6 @@ function Game:update()
     end
 
     for i = 0,self.tool.width do
-
         if self.turning_block.block_distance[self.tool.x + i] then
             if self.turning_block.block_distance[self.tool.x + i]~=0 then
                 local this_cut = 240 - log_centre - self.tool.y - self.tool.active_profile[i]
@@ -69,18 +77,10 @@ function Game:update()
 
                 end
             end
-
-
-
         else
             break
         end
-
-
-
-
     end
-
 end
 
 function Game:move_tool_y(d)
@@ -91,24 +91,36 @@ function Game:move_tool_y(d)
             self.tool:move_by_y(d*crank_vertical_sensitivity)
         end
     end
-
 end
 
 function Game:move_tool_x(d)
     self.tool:move_by_x(d)
 end
 
+
+function Game:calculate_score()
+    s = 0
+    for i = 1,320 do
+        s = s + math.abs(
+                self.this_level.values[i] - self.turning_block.block_distance[i]
+        )
+
+    end
+    return s
+end
+
+
 function Game:draw()
-    playdate.graphics.clear()
 
     if self.blueprint_visible then
-        --self.turning_block:draw()
-        self.this_level:draw()
+        self.turning_block:draw(false)
+        --self.this_level:draw()
+        self.this_level:draw_low_half()
         --self.turning_block:drawOutline(playdate.graphics.kColorXOR)
 
         self.tool:draw()
     else
-        self.turning_block:draw()
+        self.turning_block:draw(true)
         self.turning_block:drawOutline(playdate.graphics.kColorBlack)
         self.tool:draw()
         playdate.graphics.setColor(playdate.graphics.kColorXOR)
@@ -118,4 +130,17 @@ function Game:draw()
         self.chips:clear()
     end
 
+    local score_perc =  self:calculate_score()/self.this_level.outer_diff*100
+    playdate.graphics.drawText(tostring( math.min(  math.floor(110-score_perc) ,100)).. "% complete", 200,220)
+    --playdate.graphics.drawText(self.this_level.inner_diff, 200,220)
+    --playdate.graphics.drawText(self.this_level.outer_diff, 100,220)
+end
+
+
+function Game:save_state()
+    playdate.datastore.write(self.turning_block.block_distance , "active_level")
+end
+
+function Game:load_state()
+    self.turning_block.block_distance = playdate.datastore.read( "active_level")
 end
