@@ -19,8 +19,8 @@ function Blueprint:init(s)
     self.outer_diff = 0
     self.inner_diff = 0
     for i = 1,320 do
-        self.outer_diff = self.outer_diff + 100 - self.values[i]
-        self.inner_diff = self.inner_diff + self.values[i]
+        self.outer_diff = self.outer_diff + 100 - math.min(self.values[i] + 3, 100)
+        --self.inner_diff = self.inner_diff + self.values[i] - 3
     end
 
 end

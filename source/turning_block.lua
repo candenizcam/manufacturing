@@ -96,10 +96,18 @@ function TurningBlock:draw(andTurn)
             --        self.tool_offset.x+i, self.tool_offset.y + log_centre- self.block_distance[i])
 
         else
+            local somethingFalls = false
             for j = i,320 do
+                if self.block_distance[j]~=0 then
+                    somethingFalls = true
+                end
                 self.block_distance[j] = 0
 
             end
+            if somethingFalls then
+                drop_sample :play()
+            end
+
             break
         end
     end

@@ -11,3 +11,20 @@ horizontal_button_sensitivity = 1
 vertical_button_sensitivity = 4
 crank_vertical_sensitivity = 0.2
 log_centre = 108
+properties = {active_level = 0,total_level = 0}
+
+
+--- sounds
+drop_sample  = playdate.sound.sampleplayer.new("sounds/drop.wav")
+end_sample  = playdate.sound.sampleplayer.new("sounds/End.wav") --  dock edildiiinde
+running_sample  = playdate.sound.sampleplayer.new("sounds/Running.wav") -- docktan çıktığında
+start_sample  = playdate.sound.sampleplayer.new("sounds/Start.wav") -- start sesi ile runmaya başliycak yukardai
+tornado_sample  = playdate.sound.sampleplayer.new("sounds/Tornado.wav") -- tornado müzik
+filing_sample = playdate.sound.sampleplayer.new("sounds/Filing.wav")
+paper_sample = playdate.sound.sampleplayer.new("sounds/Paper.wav")
+
+
+--- visuals
+chisels = playdate.graphics.image.new("image/knifes/chisels.png")
+dark_bg = playdate.graphics.image.new("image/dark_bg.png")
+test_pause = playdate.graphics.image.new("image/testpause.png")

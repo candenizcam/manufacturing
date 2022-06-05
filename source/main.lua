@@ -15,6 +15,22 @@ local function loadGame()
 	playdate.display.setRefreshRate(30) -- Sets framerate to 50 fps
 	--math.randomseed(playdate.getSecondsSinceEpoch()) -- seed for math.random
 	gfx.setFont(font) -- DEMO
+	--playdate.datastore.write( properties, "other_data" )
+	--local  m = playdate.datastore.read( "other_data555")
+	--print("m:"..tostring(m==nil))
+	local m = playdate.datastore.read( "other_data")
+	if m~=nil then
+		if m.active_level ~= nil then
+			properties.active_level = m.active_level
+		end
+
+		if m.total_level ~= nil then
+			properties.total_level = m.total_level
+		end
+	end
+	print(m.total_level)
+
+	--print(properties.active_level)
 	game:load_state()
 
 	local menu = playdate.getSystemMenu()
@@ -26,6 +42,7 @@ local function loadGame()
 	end
 
 	)
+	tornado_sample:play(0)
 end
 
 
@@ -81,6 +98,7 @@ function playdate.rightButtonDown()
 end
 
 function playdate.BButtonDown()
+	paper_sample:play()
 	game.blueprint_visible = not game.blueprint_visible
 end
 
@@ -90,11 +108,20 @@ end
 
 
 function playdate.gameWillTerminate()
-	print("terminate")
 	game:save_state()
+	playdate.datastore.write( properties, "other_data" )
 end
 
 function  playdate.deviceWillSleep()
-	print("sleep")
 	game:save_state()
+	playdate.datastore.write( properties, "other_data" )
+end
+
+function playdate.crankDocked()
+	game:hammer_time()
+end
+
+function playdate.crankUndocked()
+	game:lets_roll()
+
 end

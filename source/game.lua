@@ -10,6 +10,7 @@ import "tool"
 import "levels"
 import "list"
 import "blueprint"
+import "sounds"
 
 class("Game").extends()
 
@@ -20,9 +21,39 @@ function Game:init()
     self.chips = List()
     self.this_level = Blueprint(levels.l1)
     self.blueprint_visible = false
+    self.hud_visual = playdate.graphics.image.new("image/hud.png")
+    self.machine_visual = playdate.graphics.image.new("image/machine.png")
+    self.chip_sounds = 0
+    self.end_level_scene = false
+    --self.drop_sound= playdate.sound.fileplayer.new(2)
+    --self.drop_sound:load("sounds/drop.wav")
+
+    --local v = self.drop_sound:play(1)
+    --print(self.drop_sound:getVolume())
+    --self.drop_sample  = playdate.sound.sampleplayer.new("sounds/drop.wav")
+
 
 
     self.howto_visual  = playdate.graphics.image.new("image/howto.png")
+    self.wheels_are_turning = false
+    self.knife_is_not_cutting = true
+end
+
+function Game:lets_roll()
+    start_sample:play()
+    running_sample:play(0)
+    self.wheels_are_turning = true
+    self.knife_is_not_cutting = false
+    self.tool:reset_tool(false)
+    self.end_level_scene = false
+end
+
+function Game:hammer_time()
+    running_sample:stop()
+    end_sample:play()
+    self.wheels_are_turning = false
+    self.knife_is_not_cutting = true
+    self.end_level_scene = true
 end
 
 function Game:restart()
@@ -60,27 +91,36 @@ function Game:update()
         self:move_tool_y(Game:vertical_button()*vertical_button_sensitivity)
     end
 
-    for i = 0,self.tool.width do
-        if self.turning_block.block_distance[self.tool.x + i] then
-            if self.turning_block.block_distance[self.tool.x + i]~=0 then
-                local this_cut = 240 - log_centre - self.tool.y - self.tool.active_profile[i]
-                if self.turning_block.block_distance[self.tool.x + i]>this_cut then
-                    self.cut_done  = 0
-                    self.turning_block.block_distance[self.tool.x + i] = math.max(math.min(self.turning_block.block_distance[self.tool.x + i],this_cut),0)
+    if not self.knife_is_not_cutting then
+        for i = 1,self.tool.width do
+            if self.turning_block.block_distance[self.tool.x + i] then
+                if self.turning_block.block_distance[self.tool.x + i]~=0 then
+                    local this_cut = 240 - log_centre - self.tool.y - self.tool:active_profile()[i]
+                    if self.turning_block.block_distance[self.tool.x + i]>this_cut then
+                        self.cut_done  = 0
+                        self.turning_block.block_distance[self.tool.x + i] = math.max(math.min(self.turning_block.block_distance[self.tool.x + i],this_cut),0)
 
-                    for j = 1,2 do
-                        local chip_x = self.tool.x + i+tool_offset_x + math.random(1,7) - 4
-                        local chip_y = 240 - self.tool.y - self.tool.active_profile[i] + math.random(1,10) - 3
-                        self.chips:append(Point(chip_x, chip_y))
+                        for j = 1,2 do
+                            local chip_x = self.tool.x + i+tool_offset_x + math.random(1,7) - 4
+                            local chip_y = 240 - self.tool.y - self.tool:active_profile()[i] + math.random(1,10) - 3
+                            self.chips:append(Point(chip_x, chip_y))
+                        end
+
+                        if self.chip_sounds==0 then
+                            filing_sample:play(0)
+                        end
+                        self.chip_sounds = 10
+
+
                     end
-
-
                 end
+            else
+                break
             end
-        else
-            break
         end
+
     end
+
 end
 
 function Game:move_tool_y(d)
@@ -101,8 +141,10 @@ end
 function Game:calculate_score()
     s = 0
     for i = 1,320 do
-        s = s + math.abs(
-                self.this_level.values[i] - self.turning_block.block_distance[i]
+        s = s + math.max(0,
+                    math.abs(
+                    self.this_level.values[i] - self.turning_block.block_distance[i]
+            )-3
         )
 
     end
@@ -111,6 +153,12 @@ end
 
 
 function Game:draw()
+    self.chip_sounds = math.max( self.chip_sounds -1,0)
+
+
+    if self.chip_sounds==0 then
+        filing_sample:stop()
+    end
 
     if self.blueprint_visible then
         self.turning_block:draw(false)
@@ -120,20 +168,41 @@ function Game:draw()
 
         self.tool:draw()
     else
-        self.turning_block:draw(true)
+        self.turning_block:draw(self.wheels_are_turning)
         self.turning_block:drawOutline(playdate.graphics.kColorBlack)
+        --dark_bg:draw(0,0)
+        --test_pause:draw(0,0)
         self.tool:draw()
-        playdate.graphics.setColor(playdate.graphics.kColorXOR)
+        playdate.graphics.setColor(playdate.graphics.kColorWhite)
         self.chips:iterate(
                 function( p  ) playdate.graphics.drawPixel(p.x,p.y);playdate.graphics.drawPixel(p.x,p.y+1) end
         )
         self.chips:clear()
     end
 
-    local score_perc =  self:calculate_score()/self.this_level.outer_diff*100
-    playdate.graphics.drawText(tostring( math.min(  math.floor(110-score_perc) ,100)).. "% complete", 200,220)
+
+
+
+    self:draw_score()
+
+
+    self.machine_visual:draw(0,0)
     --playdate.graphics.drawText(self.this_level.inner_diff, 200,220)
     --playdate.graphics.drawText(self.this_level.outer_diff, 100,220)
+end
+
+
+function Game:draw_score()
+    self.hud_visual:draw(0,0)
+
+    local score_perc =  self:calculate_score()/self.this_level.outer_diff*103 - 3
+    local score_capped = math.max(math.min(100,score_perc),0)
+    local score_string = tostring( math.min(  math.floor(100-score_capped) ,100)) --.. "% complete"
+    playdate.graphics.drawTextAligned(score_string, 367,70,kTextAlignment.center)
+
+    playdate.graphics.drawTextAligned(tostring(properties.active_level), 367,26,kTextAlignment.center)
+
+    --playdate.graphics.drawTextAligned(score_perc, 367,170,kTextAlignment.center)
 end
 
 
@@ -142,5 +211,9 @@ function Game:save_state()
 end
 
 function Game:load_state()
-    self.turning_block.block_distance = playdate.datastore.read( "active_level")
+    local m = playdate.datastore.read( "active_level")
+    if m~=nil then
+        self.turning_block.block_distance = m
+    end
+
 end

@@ -38,3 +38,7 @@ function List:iterate(f)
         f(self.vals[i])
     end
 end
+
+function List:get(x)
+    return self.vals[x]
+end

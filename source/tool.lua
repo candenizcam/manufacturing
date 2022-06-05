@@ -9,49 +9,59 @@ import "CoreLibs/graphics"
 import "CoreLibs/object"
 import "geometry"
 import "global"
-
+import "list"
 
 class("Tool").extends()
 
 function Tool:init()
     self.min_x = 0
     self.max_x = game_area_width
-    self.x = 1
+    self.x = 0
     self.y = 0
     self.width = 20
     self.height = 10
-    self.profiles = {rect = {}, left_45 = {}, right_45 = {}, left_30 = {}, right_30 = {}, circ_full = {}, circ_half={}, cric_full={}, cric_half={} }
     self.knife_names = {"rect","left_45","right_45","left_30","right_30","circ_full","cric_full"}
+    local knife_offset = {1, 67 , 23, 111, 133,45, 89 }
     self.knife_name_no = 7
     self.knife_index = 1
 
-    for i = 0,self.width do
-        self.profiles.rect[i] = self.height
-        self.profiles.left_45[i] = self.height - i
-        self.profiles.right_45[i] = self.height + i -self.width
-        self.profiles.left_30[i] = self.height - (i)/2
-        self.profiles.right_30[i] = self.height - (self.width - i)/2
-        self.profiles.circ_full[i] = math.sqrt(self.width * i - i*i) - self.width/2 + self.height
-        self.profiles.cric_full[i] =  self.height - math.sqrt(self.width * i - i*i)
+    self.blades = List()
+    for i = 1,7 do
+
+        self.blades:append(Blade(self.knife_names[i],knife_offset[i]))
+    end
+
+
+    for i = 1,self.width do
+        self.blades:get(1).profile[i] = self.height
+        self.blades:get(2).profile[i] = self.height - i
+        self.blades:get(3).profile[i] = self.height + i -self.width
+        self.blades:get(4).profile[i] = self.height - (i)/2
+        self.blades:get(5).profile[i] = self.height - (self.width - i)/2
+        self.blades:get(6).profile[i] = math.sqrt(self.width * i - i*i) - self.width/2 + self.height
+        self.blades:get(7).profile[i] =  self.height - math.sqrt(self.width * i - i*i)
 
     end
 
-    for i=0,self.width/2-1 do
-        self.profiles.cric_full[i],self.profiles.cric_full[self.width/2+i+1] = self.profiles.cric_full[self.width/2+i+1],self.profiles.cric_full[i]
+    for i=1,self.width/2-1 do
+        self.blades:get(7).profile[i],self.blades:get(7).profile[self.width/2+i+1] = self.blades:get(7).profile[self.width/2+i+1],self.blades:get(7).profile[i]
     end
-    self.profiles.cric_full[self.width/2] = self.height
-
-
-    self.active_profile = self.profiles.rect
+    self.blades:get(7).profile[11]=self.height
+    self.blades:get(7).profile[10]=self.height
 end
 
 
 
 
-function Tool:reset_tool()
-    self.x = 1
+function Tool:reset_tool(reset_x )
+    if reset_x then
+        self.x = 0
+    end
+
     self.y = 0
-    self.active_profile = self.profiles.rect
+    --self.active_profile = self.profiles.rect
+    self.active_profile_no = 1
+    self.knife_index = 1
 end
 
 function Tool:swap_tool()
@@ -60,19 +70,19 @@ function Tool:swap_tool()
     if self.knife_index>self.knife_name_no then
         self.knife_index = 1
     end
-    self.active_profile= self.profiles[self.knife_names[self.knife_index]]
+    --self.active_profile= self.profiles[self.knife_names[self.knife_index]]
 
 end
 
 function Tool:move_by_x(x)
     self.x = self.x + x
-    self.x = math.min(math.max(self.x,self.min_x ), game_area_width)
+    self.x = math.min(math.max(self.x,self.min_x ), game_area_width+10)
 end
 
 function Tool:move_to_x(x)
     self.x = x
 
-    self.x = math.min(math.max(self.x,self.min_x ), game_area_width)
+    self.x = math.min(math.max(self.x,self.min_x ), game_area_width+10)
 end
 
 function Tool:move_by_y(y)
@@ -89,15 +99,25 @@ end
 function Tool:draw()
     playdate.graphics.setColor(playdate.graphics.kColorBlack)
 
-    for i = 0,self.width do
-        playdate.graphics.setColor(playdate.graphics.kColorBlack)
-        playdate.graphics.drawLine(self.x + tool_offset_x + i, 240 - self.active_profile[i]-self.y, self.x + tool_offset_x + i,240)
-        if i~= 0 and i~= self.width then
-            playdate.graphics.setColor(playdate.graphics.kColorWhite)
-            playdate.graphics.drawLine(self.x + tool_offset_x + i, 240 - self.active_profile[i]-self.y+1, self.x + tool_offset_x + i,240 - self.active_profile[i]-self.y+5)
+    --self.blades:get(self.knife_index).image:draw(self.x + tool_offset_x + 1,   240 - self.height-self.y )
+    self.blades:get(self.knife_index):draw(self.x + tool_offset_x + 1,   240 - self.height-self.y )
+end
 
-        end
+function Tool:active_profile()
+    return self.blades:get(self.knife_index).profile
+end
 
-    end
+class("Blade").extends()
 
+function Blade:init(name,x)
+    self.name = name
+    self.profile = {}
+    self.image_rect =  playdate.geometry.rect.new(x,1,21,80)
+end
+
+function Blade:draw(x,y)
+    chisels:draw(x,y
+    ,playdate.graphics.kImageUnflipped,
+           self.image_rect
+    )
 end
