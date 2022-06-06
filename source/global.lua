@@ -11,7 +11,7 @@ horizontal_button_sensitivity = 1
 vertical_button_sensitivity = 4
 crank_vertical_sensitivity = 0.2
 log_centre = 108
-properties = {active_level = 0,total_level = 0}
+properties = {active_level = 1,total_level = 1}
 
 
 --- sounds

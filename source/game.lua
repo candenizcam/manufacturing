@@ -59,16 +59,22 @@ end
 function Game:restart()
     self.turning_block:restart()
     self.tool:reset_tool()
+end
 
+-- this one returns to level 1
+function Game:reset_progress()
+    properties.total_level  =  1
+    self.this_level = get_blueprint()
+    self:restart()
 end
 
 
-
-function Game:next_level()
+function Game:next_level(and_restart)
     properties.total_level  = properties.total_level + 1
-    self.this_level = Game:get_blueprint()
-
-
+    self.this_level = get_blueprint()
+    if and_restart then
+        self:restart()
+    end
 end
 
 function Game:horizontal_button()
@@ -225,7 +231,7 @@ function Game:draw_score()
 
     playdate.graphics.drawTextAligned(self:get_score_percentage(), 367,70,kTextAlignment.center)
 
-    playdate.graphics.drawTextAligned(tostring(properties.active_level), 367,26,kTextAlignment.center)
+    playdate.graphics.drawTextAligned(tostring(properties.total_level), 367,26,kTextAlignment.center)
 
     --playdate.graphics.drawTextAligned(score_perc, 367,170,kTextAlignment.center)
 end

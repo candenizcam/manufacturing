@@ -27,7 +27,7 @@ local function loadGame()
 			properties.total_level = m.total_level
 		end
 	end
-	properties.total_level = 1
+	--properties.total_level = 1
 
 
 
@@ -35,11 +35,12 @@ local function loadGame()
 	game:load_state()
 
 	local menu = playdate.getSystemMenu()
-	menu:addMenuItem("Restart Game", function()
-		game:restart()
+	menu:addMenuItem("Level Options", function()
+		game:hammer_time()
 	end)
-	menu:addMenuItem("Game Levels",function()
-		-- to game levels
+	menu:addMenuItem("Reset Levels",function()
+		game:reset_progress()
+
 	end
 
 	)
@@ -77,6 +78,7 @@ function playdate.leftButtonUp()
 end
 
 function playdate.upButtonDown()
+	game.end_level_scene = false
 	--level_select:selector_up()
 end
 
@@ -99,12 +101,14 @@ function playdate.rightButtonDown()
 end
 
 function playdate.BButtonDown()
-	if game.end_level_scene then -- break
-		if game.level_complete then
-
-		else
-
+	if game.end_level_scene then -- next
+		local wat = game.wheels_are_turning
+		game:next_level(true)
+		game.end_level_scene = false
+		if wat then
+			game:lets_roll()
 		end
+
 	else
 		game.blueprint_visible = not game.blueprint_visible
 		if game.blueprint_visible then
@@ -116,11 +120,12 @@ function playdate.BButtonDown()
 end
 
 function playdate.AButtonDown()
-	if game.end_level_scene then -- continue
-		if game.level_complete then
-
-		else
-
+	if game.end_level_scene then -- restart
+		local wat = game.wheels_are_turning
+		game:restart()
+		game.end_level_scene = false
+		if wat then
+			game:lets_roll()
 		end
 	else
 		game.tool:swap_tool()
