@@ -140,9 +140,7 @@ function get_blueprint()
         l3:append(0)
     end
 
-    l3:iterate(
-            function(x) print(x)  end
-    )
+
 
     return Blueprint(l3.vals)
 end

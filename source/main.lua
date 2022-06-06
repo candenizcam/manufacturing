@@ -26,12 +26,11 @@ local function loadGame()
 		if m.total_level ~= nil then
 			properties.total_level = m.total_level
 		end
+		if m.sound_options ~= nil then
+			properties.sound_options = m.sound_options
+		end
+
 	end
-	--properties.total_level = 1
-
-
-
-	--print(properties.active_level)
 	game:load_state()
 
 	local menu = playdate.getSystemMenu()
@@ -40,11 +39,30 @@ local function loadGame()
 	end)
 	menu:addMenuItem("Reset Levels",function()
 		game:reset_progress()
+	end)
 
+	menu:addOptionsMenuItem("Sound:", {"music+sfx","music","sfx"}, properties.sound_options,
+			function (x)
+				if x=="music+sfx" then
+					properties.sound_options = 1
+					tornado_sample:play(0)
+				elseif x=="music" then
+					tornado_sample:play(0)
+					properties.sound_options = 2
+					silence_effects()
+				else
+					properties.sound_options = 3
+					tornado_sample:stop()
+				end
+
+				playdate.datastore.write( properties, "other_data" )
+			end
+	)
+
+	if properties.sound_options ~= 3 then
+		tornado_sample:play(0)
 	end
 
-	)
-	tornado_sample:play(0)
 end
 
 
@@ -112,7 +130,10 @@ function playdate.BButtonDown()
 	else
 		game.blueprint_visible = not game.blueprint_visible
 		if game.blueprint_visible then
-			paper_sample:play()
+			if properties.sound_options~= 2 then
+				paper_sample:play()
+			end
+
 		end
 	end
 

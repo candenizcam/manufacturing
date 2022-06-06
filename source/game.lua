@@ -40,8 +40,11 @@ function Game:init()
 end
 
 function Game:lets_roll()
-    start_sample:play()
-    running_sample:play(0)
+    if properties.sound_options~= 2 then
+        start_sample:play()
+        running_sample:play(0)
+    end
+
     self.wheels_are_turning = true
     self.knife_is_not_cutting = false
     self.tool:reset_tool(false)
@@ -49,8 +52,11 @@ function Game:lets_roll()
 end
 
 function Game:hammer_time() -- stop
-    running_sample:stop()
-    end_sample:play()
+    if properties.sound_options~= 2 then
+        running_sample:stop()
+        end_sample:play()
+    end
+
     self.wheels_are_turning = false
     self.knife_is_not_cutting = true
     self.end_level_scene = true
@@ -64,6 +70,7 @@ end
 -- this one returns to level 1
 function Game:reset_progress()
     properties.total_level  =  1
+    playdate.datastore.write( properties, "other_data" )
     self.this_level = get_blueprint()
     self:restart()
 end
@@ -71,6 +78,7 @@ end
 
 function Game:next_level(and_restart)
     properties.total_level  = properties.total_level + 1
+    playdate.datastore.write( properties, "other_data" )
     self.this_level = get_blueprint()
     if and_restart then
         self:restart()
@@ -122,7 +130,10 @@ function Game:update()
                         end
 
                         if self.chip_sounds==0 then
-                            filing_sample:play(0)
+                            if properties.sound_options~= 2 then
+                                filing_sample:play(0)
+                            end
+
                         end
                         self.chip_sounds = 10
 

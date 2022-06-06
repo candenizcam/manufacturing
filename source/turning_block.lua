@@ -105,7 +105,10 @@ function TurningBlock:draw(andTurn)
 
             end
             if somethingFalls then
-                drop_sample :play()
+                if properties.sound_options~= 2 then
+                    drop_sample :play()
+                end
+
             end
 
             break

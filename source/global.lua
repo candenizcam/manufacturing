@@ -11,7 +11,7 @@ horizontal_button_sensitivity = 1
 vertical_button_sensitivity = 4
 crank_vertical_sensitivity = 0.2
 log_centre = 108
-properties = {active_level = 1,total_level = 1}
+properties = {active_level = 1,total_level = 1, sound_options = 1}
 
 
 --- sounds
@@ -23,6 +23,14 @@ tornado_sample  = playdate.sound.sampleplayer.new("sounds/Tornado.wav") -- torna
 filing_sample = playdate.sound.sampleplayer.new("sounds/Filing.wav")
 paper_sample = playdate.sound.sampleplayer.new("sounds/Paper.wav")
 
+function silence_effects()
+    drop_sample:stop()
+    end_sample:stop()
+    running_sample:stop()
+    start_sample:stop()
+    filing_sample:stop()
+    paper_sample:stop()
+end
 
 --- visuals
 chisels = playdate.graphics.image.new("image/knifes/chisels.png")
