@@ -21,7 +21,7 @@ function Tool:init()
     self.width = 20
     self.height = 10
     self.knife_names = {"rect","left_45","right_45","left_30","right_30","circ_full","cric_full"}
-    local knife_offset = {1, 67 , 23, 111, 133,45, 89 }
+    local knife_offset = {1, 67 , 23, 133,111,45, 89 }
     self.knife_name_no = 7
     self.knife_index = 1
 
@@ -65,7 +65,7 @@ function Tool:reset_tool(reset_x )
 end
 
 function Tool:swap_tool()
-    self.y = 0
+    -- self.y = 0
     self.knife_index = self.knife_index+1
     if self.knife_index>self.knife_name_no then
         self.knife_index = 1
@@ -105,6 +105,11 @@ end
 
 function Tool:active_profile()
     return self.blades:get(self.knife_index).profile
+
+end
+
+function Tool:get_rect_profile()
+    return self.blades:get(1).profile
 end
 
 class("Blade").extends()

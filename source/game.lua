@@ -53,10 +53,10 @@ end
 
 function Game:hammer_time() -- stop
     if properties.sound_options~= 2 then
-        running_sample:stop()
+
         end_sample:play()
     end
-
+    running_sample:stop()
     self.wheels_are_turning = false
     self.knife_is_not_cutting = true
     self.end_level_scene = true
@@ -106,6 +106,24 @@ function Game:vertical_button()
     end
     return buttonY
 end
+
+function Game:move_tool_out()
+    for i = 1,self.tool.width do
+        local this_cut = 240 - log_centre - self.tool.y - self.tool:get_rect_profile()[i]
+        if self.turning_block.block_distance[self.tool.x + i] ~= nil then
+            local diff = this_cut - self.turning_block.block_distance[self.tool.x + i]
+            if diff<0 then
+                self.tool:move_by_y(diff-5)
+            end
+        end
+
+
+    end
+
+
+end
+
+
 
 
 function Game:update()

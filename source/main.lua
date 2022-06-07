@@ -134,6 +134,12 @@ function playdate.BButtonDown()
 			if properties.sound_options~= 2 then
 				paper_sample:play()
 			end
+			running_sample:stop()
+		else
+			if properties.sound_options~= 2 and game.wheels_are_turning then
+				running_sample:play(0)
+			end
+
 
 		end
 	end
@@ -151,6 +157,7 @@ function playdate.AButtonDown()
 		end
 	else
 		game.tool:swap_tool()
+		game:move_tool_out()
 	end
 
 
