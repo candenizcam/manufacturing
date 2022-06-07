@@ -47,11 +47,11 @@ function Game:lets_roll()
 
     self.wheels_are_turning = true
     self.knife_is_not_cutting = false
-    self.tool:reset_tool(false)
+    self.tool:reset_tool(false, false)
     self.end_level_scene = false
 end
 
-function Game:hammer_time() -- stop
+function Game:hammer_time(end_scene) -- stop
     if properties.sound_options~= 2 then
 
         end_sample:play()
@@ -59,7 +59,10 @@ function Game:hammer_time() -- stop
     running_sample:stop()
     self.wheels_are_turning = false
     self.knife_is_not_cutting = true
-    self.end_level_scene = true
+    if end_scene then
+        self.end_level_scene = true
+    end
+
 end
 
 function Game:restart()
@@ -279,8 +282,10 @@ function Game:load_state()
     end
 
     local b = playdate.datastore.read( "active_blueprint")
+
+
     if b~=nil then
-        game.this_level = b
+        game.this_level = Blueprint(b)
     else
         game.this_level = get_blueprint()
     end

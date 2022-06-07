@@ -35,12 +35,27 @@ local function loadGame()
 
 	local menu = playdate.getSystemMenu()
 	menu:addMenuItem("Level Options", function()
-		game:hammer_time()
+		game:hammer_time(true)
 	end)
-	menu:addMenuItem("Roll the Lathe",function()
-		--game:reset_progress()
-		game:lets_roll()
-	end)
+
+
+	menu:addOptionsMenuItem("Lathe:", {"stop","roll"}, game.wheels_are_turning and 2 or 1,
+			function (x)
+				if x=="Stop" then
+					game:hammer_time(false)
+				else
+					game:lets_roll()
+				end
+
+				playdate.datastore.write( properties, "other_data" )
+			end
+	)
+
+
+	--menu:addMenuItem("Roll the Lathe",function()
+	--	--game:reset_progress()
+	--	game:lets_roll()
+	--end)
 
 	menu:addOptionsMenuItem("Sound:", {"music+sfx","music","sfx"}, properties.sound_options,
 			function (x)
@@ -176,7 +191,7 @@ function  playdate.deviceWillSleep()
 end
 
 function playdate.crankDocked()
-	game:hammer_time()
+	game:hammer_time(true)
 end
 
 function playdate.crankUndocked()

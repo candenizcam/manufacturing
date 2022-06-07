@@ -53,15 +53,18 @@ end
 
 
 
-function Tool:reset_tool(reset_x )
+function Tool:reset_tool(reset_x, reset_knife )
     if reset_x then
         self.x = 0
     end
 
     self.y = 0
     --self.active_profile = self.profiles.rect
-    self.active_profile_no = 1
-    self.knife_index = 1
+    if reset_knife then
+        self.active_profile_no = 1
+        self.knife_index = 1
+    end
+
 end
 
 function Tool:swap_tool()

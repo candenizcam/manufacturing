@@ -19,6 +19,7 @@ function Blueprint:init(s)
     self.outer_diff = 0
     self.inner_diff = 0
     for i = 1,320 do
+
         self.outer_diff = self.outer_diff + 100 - math.min(self.values[i] + 3, 100)
         --self.inner_diff = self.inner_diff + self.values[i] - 3
     end
@@ -97,9 +98,9 @@ function get_blueprint()
         if l.size==4 then
             break
         end
-        local v = math.random(1,26)
+        local v = math.random(1,33)
         if not l:contains(v) then
-            if v>19 then
+            if v>24 then
                 l:append(v)
                 break
             else
@@ -112,8 +113,8 @@ function get_blueprint()
     local l2 = l:map(
             function(x)
                 local st = ""
-                if x >19 then
-                    st = "rnd_end" .. tostring(x-19)
+                if x >24 then
+                    st = "rnd_end" .. tostring(x-24)
                 else
                     st = "rnd" .. tostring(x)
                 end
@@ -140,7 +141,7 @@ function get_blueprint()
         l3:append(0)
     end
 
-
-
-    return Blueprint(l3.vals)
+    local b = Blueprint(l3.vals)
+    playdate.datastore.write(b.values, "active_blueprint")
+    return b
 end
