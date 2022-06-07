@@ -97,7 +97,7 @@ function playdate.update()
 		--level_select:draw()
 	end
 
-	playdate.drawFPS(0,0) -- FPS widget
+	--playdate.drawFPS(0,0) -- FPS widget
 end
 
 -- functions below control input for the machine

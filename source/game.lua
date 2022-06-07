@@ -22,6 +22,7 @@ function Game:init()
     self.blueprint_visible = false
     self.hud_visual = playdate.graphics.image.new("image/hud.png")
     self.machine_visual = playdate.graphics.image.new("image/machine.png")
+
     self.chip_sounds = 0
     self.end_level_scene = false
     self.level_complete = false
@@ -35,6 +36,7 @@ function Game:init()
 
 
     self.howto_visual  = playdate.graphics.image.new("image/howto.png")
+    playdate.setMenuImage(self.howto_visual )
     self.wheels_are_turning = false
     self.knife_is_not_cutting = true
 end
