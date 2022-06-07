@@ -37,8 +37,9 @@ local function loadGame()
 	menu:addMenuItem("Level Options", function()
 		game:hammer_time()
 	end)
-	menu:addMenuItem("Reset Levels",function()
-		game:reset_progress()
+	menu:addMenuItem("Roll the Lathe",function()
+		--game:reset_progress()
+		game:lets_roll()
 	end)
 
 	menu:addOptionsMenuItem("Sound:", {"music+sfx","music","sfx"}, properties.sound_options,
