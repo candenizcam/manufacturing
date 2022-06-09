@@ -5,6 +5,7 @@
 ---
 
 
+--[[
 import "CoreLibs/graphics"
 import "CoreLibs/object"
 
@@ -131,4 +132,4 @@ function LevelSelect:draw()
 
 
 
-end
+end]]

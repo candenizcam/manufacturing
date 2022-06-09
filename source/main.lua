@@ -172,6 +172,7 @@ function playdate.AButtonDown()
 		end
 	else
 		game.tool:swap_tool()
+		tool_change_sample:play()
 		game:move_tool_out()
 	end
 

@@ -22,6 +22,7 @@ start_sample  = playdate.sound.sampleplayer.new("sounds/Start.wav") -- start ses
 tornado_sample  = playdate.sound.sampleplayer.new("sounds/Tornado.wav") -- tornado müzik
 filing_sample = playdate.sound.sampleplayer.new("sounds/Filing.wav")
 paper_sample = playdate.sound.sampleplayer.new("sounds/Paper.wav")
+tool_change_sample = playdate.sound.sampleplayer.new("sounds/change.wav")
 
 function silence_effects()
     drop_sample:stop()
@@ -30,6 +31,7 @@ function silence_effects()
     start_sample:stop()
     filing_sample:stop()
     paper_sample:stop()
+    tool_change_sample:stop()
 end
 
 --- visuals
